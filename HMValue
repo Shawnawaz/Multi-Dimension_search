@@ -1,0 +1,13 @@
+import java.util.ArrayList;
+
+/*
+ * Authors : 
+ * Shawnawaz Jani basha 
+ */
+
+//This is the node structured for stored in the list used in Treemap (Hmap)
+public class HMValue {
+	public float price;
+	public Long id;
+
+}
