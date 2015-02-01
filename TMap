@@ -1,0 +1,163 @@
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+/*
+ * Authors : 
+ * Shawnawaz Jani basha
+ * 
+ */
+
+/*
+ * This module includes all the operations performed in Treemap where Product ID is kept as key.
+ */
+public class TMap {
+
+	
+	TreeMap<Long,TMValue> TM=new TreeMap<Long,TMValue>();
+	
+	//This function converts the given string into corresponding values and stores in Dictionary.
+	public static Dictionary InsertStrtoData(String str)
+	{
+		Dictionary d=new Dictionary();
+		
+		//System.out.println("String before split:"+ str);
+		String[] parts=str.split(" ");
+		String s;
+		d.ID=Long.parseLong(parts[1]);
+		d.price=Float.parseFloat(parts[2]);
+		int i=3;
+		while(!parts[i].equals("0"))
+		{
+			d.name.add(Long.parseLong(parts[i]));
+			i++;
+			
+		}
+		return d;
+	}
+	//TO check whether the key is available in the Tree map
+	public TMValue exist(Long key)
+	{
+		if(TM.containsKey(key))
+			return TM.get(key);
+		return null;
+	}
+	//TO insert a new K,V pair in the Tree map
+	public long insert(Dictionary d)
+	{
+		TMValue value=new TMValue();
+		value.price=d.price;
+		value.name=d.name;
+		//Checks whether the key is not present in the tree map and inserts new key into the treemap
+		if(!TM.containsKey(d.ID))
+		{
+			TM.put(d.ID, value);
+			return 1;
+		}
+		//If the key is already present , the value corresponding to the key is altered.
+		else
+			if(!value.name.isEmpty())
+				TM.put(d.ID, value);
+			else
+			{
+				value.name=TM.get(d.ID).name;
+				TM.put(d.ID, value);
+			}
+		return 0;
+		
+	}
+	//To find the value in the tree map using a key
+	public float Find(long key)
+	{
+		if(TM.containsKey(key))
+			return TM.get(key).price;
+		else
+			return 0;
+	}
+	//To delete the k,V in the tree map using key
+	public long delete(long key)
+	{
+		ArrayList<Long> namelist=new ArrayList<Long>();
+		long val=0;
+			namelist=TM.get(key).name;
+			for(long i : namelist)
+				val=val+i;
+			TM.remove(key);
+			return val;
+		
+	}
+	//to the print the tree map for checking purpose.
+	public void print()
+	{
+		Set<Long> s=TM.keySet();
+		Iterator it=s.iterator();
+		while(it.hasNext())
+		{
+			long id=(Long) it.next();
+			TMValue val=TM.get(id);
+			System.out.println(id+" "+val.name+" "+val.price);
+		}
+	}
+	//To increase the price of the product whose ID lies within [l,h] with r%.
+	public float PriceHike(long l,long h, float r,HMap hmap)
+	{
+		SortedMap<Long,TMValue> subtree=TM.subMap(l,h+1);
+		
+		
+		float sum=0;
+		Iterator it=subtree.keySet().iterator();
+		//HMap hmap=new HMap();
+		
+		//NumberFormat formatter = NumberFormat.getNumberInstance();
+		//formatter.setMaximumFractionDigits(2);
+		while(it.hasNext())
+		{
+			DecimalFormat df = new DecimalFormat("#.00");
+			long id=(Long) it.next();
+			if(id>=l && id<=h)
+			{
+				TMValue val=subtree.get(id);
+				float oldprice=subtree.get(id).price;
+				Dictionary d=new Dictionary();
+				d.ID=id;
+				d.name=val.name;
+				d.price=oldprice;
+				float np=(oldprice+(oldprice*(r/100)));
+				float newprice=Float.parseFloat(df.format(np));
+				val.price=newprice;
+				
+				float diff=(newprice-oldprice);
+				/*if(diff > 998)
+				{	
+					
+					float rem=diff%1000;
+					int q=(int) (diff/1000);
+					sum=sum+(q*1000);
+					//diff=rem;
+					diff=Math.abs(rem);
+				}*/
+				//System.out.println("diff before formating:"+ diff);
+					//String di=formatter.format(diff);
+					
+					float dif = Float.parseFloat(df.format(diff));
+					//System.out.println("Difference is :" +dif);
+					//diff=Float.parseFloat(di);
+				//System.out.println("ID:"+id+"old price:"+oldprice+"\tnew price:"+newprice+"hike :"+ diff);
+				sum=sum+dif;
+				sum=Float.parseFloat(df.format(sum));
+				//System.out.println("hike :"+ );
+				TM.put(id,val);
+				//Calls a method to modify the corresponding key,Value inanother Tree map
+				hmap.modify(d,newprice);
+			}
+			
+		}
+		return sum;
+	}
+}
