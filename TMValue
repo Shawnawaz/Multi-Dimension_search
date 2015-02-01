@@ -1,0 +1,16 @@
+import java.util.ArrayList;
+
+/*
+ * Authors : 
+ * Shawnawaz Jani basha 
+ */
+
+
+//This is a node structure used to save as value in the treemap(TMap)
+public class TMValue {
+
+	public float price;
+	public ArrayList<Long> name=new ArrayList<Long>();
+	
+	
+}
